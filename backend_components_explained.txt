@@ -1,0 +1,57 @@
+# Rentit Project: Backend & Root Components Explanation
+This document explains the purpose and functionality of all files and folders outside of the `frontend` folder.
+
+## Root Directory
+- `README.md`: Provides the main documentation for the project, including setup instructions, technologies used, and overviews of features.
+
+## Backend Directory (`backend/`)
+This folder contains the complete Node.js / Express server and its configurations. 
+
+### Configuration & Entry Point
+- `package.json`: Contains the metadata for the backend project, scripts to start the server (`start` and `dev` run `node server.js`), and a list of necessary dependencies:
+  - `express`: The core web framework used for routing and handling HTTP requests.
+  - `mysql2`: Used for establishing a connection to the MySQL database and querying it via promises.
+  - `bcrypt`: Used for securely hashing user passwords before recording them into the database, and for securely comparing hashes during login.
+  - `cors`: Middleware to securely allow cross-origin HTTP requests (e.g., answering requests from the frontend running on a different port).
+
+- `package-lock.json`: Auto-generated file that locks down exactly which versions of dependencies were installed to guarantee consistent execution across environments.
+
+- `server.js`: The main entry point for the backend. What it does:
+  - Initializes the Express application.
+  - Applies essential middleware (`cors` for accessing the API, `express.json()` for parsing incoming JSON request bodies).
+  - Mounts the specific route handlers located in the `routes/` directory under root paths like `/api/vehicles`, `/api/bookings`, etc.
+  - Binds the app and starts listening for HTTP traffic on port 5000.
+
+### Database Connection & Schema
+- `db.js`: Handles the connection to the MySQL database. 
+  - Uses `mysql2` to define a connection pool toward `localhost` (user: root, checking DB: `rentit_db`). 
+  - Tests the connection immediately on launch and exports a promise-wrapped `db` object so all routes can cleanly perform `async/await` SQL queries.
+
+- `schema.sql`: Contains the raw SQL statements necessary to scaffold and reset the database. 
+  - It handles defining the database structure, creating tables (`users`, `vehicles`, `drivers`, `bookings`), establishing column data types, foreign key relationships, and initial default placeholders.
+
+### API Routes (`backend/routes/`)
+This subdirectory separates the main components of the business logic into singular files which act as controllers. They all use `express.Router()`.
+
+- `auth.js` (Authentication API):
+  - Dependencies used: `express`, `bcrypt`, and the database pool (`db.js`).
+  - `POST /register`: Registers a new user. It ensures the email is unique, securely hashes the password using `bcrypt`, saves the record, and defaults the role to 'customer'.
+  - `POST /login`: Validates login credentials. Fetches a user by their email, confirms the input password against the hashed record with `bcrypt.compare`, and returns their session details.
+
+- `vehicles.js` (Vehicle Inventory CRUD):
+  - Dependencies used: `express`, database pool (`db.js`).
+  - `GET /`: Fetches and returns all vehicles in the database.
+  - `POST /`: Allows an admin user to insert a new vehicle into the system. It checks the provided role in the request body to enforce authorization.
+  - `PUT /:id` & `DELETE /:id`: Admin-only endpoints dedicated to modifying a vehicle's specific properties or deleting a vehicle.
+
+- `bookings.js` (Reservation Logic):
+  - Dependencies used: `express`, database pool (`db.js`).
+  - `POST /`: Contains the business logic to securely create a booking. It mathematically calculates the duration of the rental based on the given dates, calculates the final price, inserts a booking record, and updates the targeted vehicle and driver statuses to 'booked/unavailable'.
+  - `GET /`: (Admin) Grabs all possible bookings in the system, performing database joins against users, vehicles, and drivers to format a human-readable array.
+  - `GET /:userId`: Fetches the booking history specific to one standard user.
+  - `PUT /cancel/:id`: Cancels an ongoing booking. Very importantly, it restores the availability statuses of the linked vehicle and driver back to 'available'.
+
+- `drivers.js` (Driver Roster):
+  - Dependencies used: `express`, database pool (`db.js`).
+  - `GET /`: Retrieves all registered drivers.
+  - `POST /`: Admin-level endpoint for entering a new driver onto the roster, taking their name and phone, and defaulting them to 'available'.

@@ -1,0 +1,49 @@
+# Rentit Project: Frontend Components Explanation
+This document explains the structure and functionality of the files within the `frontend` folder. The frontend is built using React (via Vite) and Tailwind CSS for styling.
+
+## Root Level of `frontend/`
+- `package.json`: Manages the frontend dependencies such as `react`, `react-router-dom`, `lucide-react` (for icons), and Vite for the build tooling.
+- `vite.config.js`: Configuration file for the Vite build tool. Defines setup parameters and plugins for React.
+- `index.html`: The HTML template where the React application mounts itself (`<div id="root"></div>`).
+- `eslint.config.js`: Configuration for ESLint to maintain code quality and styling consistency in JS/JSX files.
+
+## Source Folder (`frontend/src/`)
+This is where the actual React code lives.
+
+### Entry Points
+- `main.jsx`: This is the JavaScript entry point of the React application. It grabs the HTML element `root` and renders the React tree inside it. It wraps the app in crucial global Context Providers (like `AuthProvider` and `ToastProvider`) so the whole application has access to their data.
+- `App.jsx`: The root component that sets up the React Router (`BrowserRouter`). It maps specific URL paths to their corresponding page components and enforces routing rules (like protecting customer/admin routes).
+- `index.css`: Contains the global CSS styles, Tailwind CSS `@tailwind` directives (base, components, utilities), and any custom CSS animations or classes used throughout the app.
+
+### Context (`frontend/src/context/`)
+Context holds global state that multiple components need access to.
+- `AuthContext.jsx`: Manages the user authentication state (logging in, logging out, remembering the user token in localStorage, identifying if the user is an admin or a customer).
+- `ToastContext.jsx`: Provides a custom mechanism to display popup notifications (toasts) across the application for success or error messages without having to write separate components on every page.
+
+### Layout & Components (`frontend/src/components/`)
+Reusable UI pieces that appear on multiple pages.
+- `Navbar.jsx`: The top navigation bar. It changes links dynamically depending on whether a user is logged out, logged in as a normal customer, or logged in as an admin.
+- `AdminSidebar.jsx`: A vertical sidebar specifically for the admin panel layout, providing links to all administrative functions.
+- `ProtectedRoute.jsx`: A wrapper component. It checks the `AuthContext` to see if a user is logged in, and if they hold the appropriate role (admin or customer). If they do not have access, it redirects them away (usually to the login page).
+- `LoadingSpinner.jsx`: A simple standalone UI element displayed while data is fetching from the backend.
+
+### Pages (`frontend/src/pages/`)
+Organized by role, these represent the full-page views a user can land on.
+
+#### Public Pages
+- `Home.jsx`: The landing page seen by all visitors (features a hero section, testimonials, etc.).
+- `Login.jsx`: Login form querying the `/api/login` backend route.
+- `Register.jsx`: Sign-up form resolving to the `/api/register` backend route.
+
+#### Customer Pages (`frontend/src/pages/customer/`)
+- `Dashboard.jsx`: The homepage for logged-in customers, showcasing quick stats and calls to action.
+- `VehicleList.jsx`: Displays a catalog of all available vehicles that a customer can view. 
+- `BookVehicle.jsx`: The detailed booking view for a specific vehicle where a customer inputs their pickup and drop-off dates to finalize a reservation.
+- `MyBookings.jsx`: A history page displaying past and upcoming car rentals tied specifically to that user.
+
+#### Admin Pages (`frontend/src/pages/admin/`)
+- `AdminDashboard.jsx`: A quick statistic overview for admins.
+- `AddVehicle.jsx`: Form allowing admins to list a new rental vehicle into the database.
+- `ManageVehicles.jsx`: A table outlining all vehicles, providing admins with functions to edit their details or remove them.
+- `ManageDrivers.jsx`: An interface for adding and reading information about available drivers.
+- `AllBookings.jsx`: A comprehensive list of all reservations made by any user in the system.

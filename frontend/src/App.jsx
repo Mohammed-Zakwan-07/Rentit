@@ -2,31 +2,31 @@
 // App Component - Router Setup
 // =============================================
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
-import Navbar from './components/Navbar';
-import AdminSidebar from './components/AdminSidebar';
-import ProtectedRoute from './components/ProtectedRoute';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
+import Navbar from "./components/Navbar";
+import AdminSidebar from "./components/AdminSidebar";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // Public pages
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Register from './pages/Register';
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 // Customer pages
-import Dashboard from './pages/customer/Dashboard';
-import VehicleList from './pages/customer/VehicleList';
-import BookVehicle from './pages/customer/BookVehicle';
-import MyBookings from './pages/customer/MyBookings';
+import Dashboard from "./pages/customer/Dashboard";
+import VehicleList from "./pages/customer/VehicleList";
+import BookVehicle from "./pages/customer/BookVehicle";
+import MyBookings from "./pages/customer/MyBookings";
 
 // Admin pages
-import AdminDashboard from './pages/admin/AdminDashboard';
-import AddVehicle from './pages/admin/AddVehicle';
-import ManageVehicles from './pages/admin/ManageVehicles';
-import ManageDrivers from './pages/admin/ManageDrivers';
-import AllBookings from './pages/admin/AllBookings';
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AddVehicle from "./pages/admin/AddVehicle";
+import ManageVehicles from "./pages/admin/ManageVehicles";
+import ManageDrivers from "./pages/admin/ManageDrivers";
+import AllBookings from "./pages/admin/AllBookings";
 
-// Layout wrapper for admin pages (with sidebar)
+// Layout for admin pages
 function AdminLayout({ children }) {
   return (
     <div className="flex">
@@ -38,8 +38,6 @@ function AdminLayout({ children }) {
 
 export default function App() {
   const { loading } = useAuth();
-
-  // Show loading screen while checking auth
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-slate-950">
